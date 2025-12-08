@@ -11,9 +11,6 @@ from cashflow_model import (
     detect_cash_shortages,
 )
 
-# -------------------------------------------------
-# Streamlit Page Configuration
-# -------------------------------------------------
 st.set_page_config(
     page_title="SmartCash Cash Flow Forecasting",
     layout="wide",
@@ -32,10 +29,6 @@ Upload your CSVs or use sample data, set starting bank balance, and see **7–30
 """
 )
 
-
-# -------------------------------------------------
-# Sidebar Inputs
-# -------------------------------------------------
 starting_balance = st.sidebar.number_input(
     "Starting Bank Balance (current)",
     min_value=-1_000_000.0,
@@ -59,9 +52,6 @@ st.sidebar.write("**Required CSV format:**")
 st.sidebar.code("date,amount", language="text")
 
 
-# -------------------------------------------------
-# Sample Data
-# -------------------------------------------------
 def load_sample_data():
     sales_sample = pd.DataFrame({
         "date": ["2024-01-01", "2024-01-02", "2024-01-03"],
@@ -81,9 +71,6 @@ def load_sample_data():
     return sales_sample, expenses_sample, inventory_sample
 
 
-# -------------------------------------------------
-# Upload Section
-# -------------------------------------------------
 st.subheader("1️⃣ Upload Data")
 
 use_sample = st.checkbox("Use sample data instead of uploading files")
@@ -107,8 +94,7 @@ else:
     if not (sales_file and expenses_file and inventory_file):
         st.info("Upload all three CSV files or enable sample data.")
         st.stop()
-
-    # Helper to load uploaded CSVs
+        
     def read_csv(file):
         return pd.read_csv(io.StringIO(file.getvalue().decode("utf-8")))
 
@@ -120,10 +106,6 @@ else:
         st.error(f"Error reading CSVs: {e}")
         st.stop()
 
-
-# -------------------------------------------------
-# Preview Uploaded or Sample Data
-# -------------------------------------------------
 with st.expander("🔍 Preview data"):
     st.write("**Sales (first 5 rows)**")
     st.dataframe(sales_df.head())
@@ -134,10 +116,6 @@ with st.expander("🔍 Preview data"):
     st.write("**Inventory (first 5 rows)**")
     st.dataframe(inventory_df.head())
 
-
-# -------------------------------------------------
-# Step 2 — Build Daily Cash Flow Series
-# -------------------------------------------------
 st.subheader("2️⃣ Build Daily Cash Flow Series")
 
 try:
@@ -157,10 +135,6 @@ hist_flow_fig = px.line(
 )
 st.plotly_chart(hist_flow_fig, use_container_width=True)
 
-
-# -------------------------------------------------
-# Step 3 — Train Model
-# -------------------------------------------------
 st.subheader("3️⃣ Train Forecasting Model")
 
 try:
@@ -172,10 +146,6 @@ except Exception as e:
 
 st.success("Model trained successfully!")
 
-
-# -------------------------------------------------
-# Step 4 — Forecast
-# -------------------------------------------------
 st.subheader("4️⃣ Forecast Future Cash Flow")
 
 try:
@@ -224,10 +194,6 @@ balance_fig.add_hline(
 )
 st.plotly_chart(balance_fig, use_container_width=True)
 
-
-# -------------------------------------------------
-# Step 5 — Cash Shortages
-# -------------------------------------------------
 st.subheader("5️⃣ Cash Shortage Alerts")
 
 shortages = detect_cash_shortages(forecast_df, threshold=shortage_threshold)
@@ -241,10 +207,6 @@ else:
             f"- Date: **{s['date']}**, predicted balance: **₹{s['predicted_balance']:,.0f}**"
         )
 
-
-# -------------------------------------------------
-# Step 6 — Download CSV
-# -------------------------------------------------
 st.subheader("6️⃣ Download Forecast Data")
 
 csv_buf = io.StringIO()
@@ -259,3 +221,4 @@ st.download_button(
     file_name="cashflow_forecast.csv",
     mime="text/csv",
 )
+
