@@ -25,6 +25,10 @@ def load_and_prepare_cashflow(
     expenses["date"] = pd.to_datetime(expenses["date"])
     inv["date"] = pd.to_datetime(inv["date"])
 
+    expenses["amount"] = expenses["amount"].abs()
+    inv["amount"] = inv["amount"].abs()
+
+
   
     inflow_df = sales[["date", "amount"]].rename(columns={"amount": "inflow"})
     inflow_df["outflow"] = 0.0
@@ -133,3 +137,4 @@ def detect_cash_shortages(
             }
         )
     return results
+
